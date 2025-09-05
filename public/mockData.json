@@ -1,0 +1,224 @@
+{
+    "categories": [
+        {
+            "name": "Tents",
+            "icon": "⛺",
+            "searchTerm": "tent"
+        },
+        {
+            "name": "Chairs",
+            "icon": "🪑",
+            "searchTerm": "chair"
+        },
+        {
+            "name": "Tables",
+            "icon": "🪑",
+            "searchTerm": "table"
+        },
+        {
+            "name": "Speakers",
+            "icon": "🔊",
+            "searchTerm": "speaker"
+        },
+        {
+            "name": "Lighting",
+            "icon": "💡",
+            "searchTerm": "light"
+        },
+        {
+            "name": "Mattresses",
+            "icon": "🛏️",
+            "searchTerm": "mattress"
+        },
+        {
+            "name": "Decoration",
+            "icon": "🎨",
+            "searchTerm": "decoration"
+        },
+        {
+            "name": "Catering",
+            "icon": "🍽️",
+            "searchTerm": "catering"
+        }
+    ],
+    "tentHouses": [
+        {
+            "id": "sharma-tent-house",
+            "name": "Sharma Tent House",
+            "location": "Pune, Maharashtra",
+            "description": "Premium tent and decoration services for all occasions",
+            "rating": 4.5,
+            "items": [
+                {
+                    "name": "Wedding Tent",
+                    "price": 15000,
+                    "description": "Elegant wedding tent for 200 people",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                },
+                {
+                    "name": "Plastic Chairs",
+                    "price": 25,
+                    "description": "Comfortable plastic chairs",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                },
+                {
+                    "name": "Sound System",
+                    "price": 5000,
+                    "description": "Professional sound system with microphones",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                },
+                {
+                    "name": "LED Lights",
+                    "price": 2000,
+                    "description": "Colorful LED lighting setup",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                }
+            ]
+        },
+        {
+            "id": "royal-events",
+            "name": "Royal Events & Decorations",
+            "location": "Mumbai, Maharashtra",
+            "description": "Luxury event management and rental services",
+            "rating": 4.8,
+            "items": [
+                {
+                    "name": "Luxury Tent",
+                    "price": 25000,
+                    "description": "Premium luxury tent with AC",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                },
+                {
+                    "name": "Round Tables",
+                    "price": 300,
+                    "description": "Elegant round tables for dining",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                },
+                {
+                    "name": "Stage Decoration",
+                    "price": 8000,
+                    "description": "Beautiful stage backdrop",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                },
+                {
+                    "name": "Catering Setup",
+                    "price": 12000,
+                    "description": "Complete catering arrangement",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                }
+            ]
+        },
+        {
+            "id": "budget-rentals",
+            "name": "Budget Rentals",
+            "location": "Delhi, NCR",
+            "description": "Affordable rental solutions for all events",
+            "rating": 4.2,
+            "items": [
+                {
+                    "name": "Basic Tent",
+                    "price": 8000,
+                    "description": "Simple tent for small gatherings",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                },
+                {
+                    "name": "Folding Chairs",
+                    "price": 20,
+                    "description": "Basic folding chairs",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                },
+                {
+                    "name": "Mattresses",
+                    "price": 150,
+                    "description": "Clean mattresses for guests",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                },
+                {
+                    "name": "Basic Lighting",
+                    "price": 1000,
+                    "description": "Simple lighting arrangement",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                }
+            ]
+        },
+        {
+            "id": "grand-celebrations",
+            "name": "Grand Celebrations",
+            "location": "Bangalore, Karnataka",
+            "description": "Making your celebrations grand and memorable",
+            "rating": 4.6,
+            "items": [
+                {
+                    "name": "Party Tent",
+                    "price": 18000,
+                    "description": "Spacious party tent with decorations",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                },
+                {
+                    "name": "Bar Setup",
+                    "price": 5000,
+                    "description": "Complete bar counter setup",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                },
+                {
+                    "name": "Dance Floor",
+                    "price": 7000,
+                    "description": "Professional dance floor",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                },
+                {
+                    "name": "Photography Setup",
+                    "price": 3000,
+                    "description": "Photo booth with props",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                }
+            ]
+        },
+        {
+            "id": "elite-events",
+            "name": "Elite Events Co.",
+            "location": "Chennai, Tamil Nadu",
+            "description": "Elite event planning with premium services",
+            "rating": 4.7,
+            "items": [
+                {
+                    "name": "Premium Wedding Tent",
+                    "price": 30000,
+                    "description": "Luxury wedding tent with chandeliers",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                },
+                {
+                    "name": "VIP Chairs",
+                    "price": 100,
+                    "description": "Premium cushioned chairs",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                },
+                {
+                    "name": "Professional DJ Setup",
+                    "price": 8000,
+                    "description": "High-end DJ equipment with lighting",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                },
+                {
+                    "name": "Floral Decorations",
+                    "price": 15000,
+                    "description": "Fresh flower arrangements",
+                    "imageUrl": "https://via.placeholder.com/300x200"
+                }
+            ]
+        }
+    ],
+    "appConfig": {
+        "appName": "Event Essentials",
+        "tagline": "Your one-stop shop for tent & decor rentals",
+        "searchPlaceholder": "Search for chairs, tents, speakers...",
+        "currency": "₹",
+        "supportedCities": [
+            "Pune, Maharashtra",
+            "Mumbai, Maharashtra",
+            "Delhi, NCR",
+            "Bangalore, Karnataka",
+            "Chennai, Tamil Nadu"
+        ]
+    }
+}
