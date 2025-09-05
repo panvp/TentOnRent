@@ -23,9 +23,37 @@ function App() {
   useEffect(() => {
     const loadMockData = async () => {
       try {
-        const response = await fetch("/mockData.json");
-        const data = await response.json();
-        setMockData(data);
+        // Try different paths for GitHub Pages compatibility
+        const possiblePaths = [
+          `${process.env.PUBLIC_URL}/mockData.json`,
+          `${window.location.pathname}mockData.json`,
+          "/mockData.json",
+          "./mockData.json"
+        ];
+        
+        let data = null;
+        let lastError = null;
+        
+        for (const path of possiblePaths) {
+          try {
+            console.log(`Trying to fetch from: ${path}`);
+            const response = await fetch(path);
+            if (response.ok) {
+              data = await response.json();
+              console.log(`Successfully loaded data from: ${path}`);
+              break;
+            }
+          } catch (error) {
+            lastError = error;
+            console.log(`Failed to load from ${path}:`, error);
+          }
+        }
+        
+        if (data) {
+          setMockData(data);
+        } else {
+          throw lastError || new Error("Failed to load data from any path");
+        }
       } catch (error) {
         console.error("Failed to load mock data:", error);
         showToast("error", "Failed to load data. Please refresh the page.");
