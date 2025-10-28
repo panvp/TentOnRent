@@ -208,17 +208,42 @@
             ]
         }
     ],
-    "appConfig": {
-        "appName": "Event Essentials",
-        "tagline": "Your one-stop shop for tent & decor rentals",
-        "searchPlaceholder": "Search for chairs, tents, speakers...",
-        "currency": "₹",
-        "supportedCities": [
-            "Pune, Maharashtra",
-            "Mumbai, Maharashtra",
-            "Delhi, NCR",
-            "Bangalore, Karnataka",
-            "Chennai, Tamil Nadu"
-        ]
-    }
+  "appConfig": {
+    "appName": "Event Essentials",
+    "tagline": "Your one-stop shop for tent & decor rentals",
+    "searchPlaceholder": "Search for chairs, tents, speakers...",
+    "currency": "₹",
+    "supportedCities": [
+      "Pune, Maharashtra",
+      "Mumbai, Maharashtra",
+      "Delhi, NCR",
+      "Bangalore, Karnataka",
+      "Chennai, Tamil Nadu",
+      "Hyderabad, Telangana",
+      "Kolkata, West Bengal",
+      "Ahmedabad, Gujarat",
+      "Jaipur, Rajasthan",
+      "Lucknow, Uttar Pradesh",
+      "Chandigarh, Punjab",
+      "Indore, Madhya Pradesh",
+      "Kochi, Kerala",
+      "Coimbatore, Tamil Nadu",
+      "Vadodara, Gujarat",
+      "Nashik, Maharashtra",
+      "Nagpur, Maharashtra",
+      "Thiruvananthapuram, Kerala",
+      "Bhubaneswar, Odisha",
+      "Surat, Gujarat"
+    ],
+    "popularCities": [
+      "Mumbai, Maharashtra",
+      "Delhi, NCR", 
+      "Bangalore, Karnataka",
+      "Pune, Maharashtra",
+      "Hyderabad, Telangana",
+      "Chennai, Tamil Nadu",
+      "Kolkata, West Bengal",
+      "Ahmedabad, Gujarat"
+    ]
+  }
 }

@@ -12,6 +12,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [mockData, setMockData] = useState(null);
   const [selectedTentHouse, setSelectedTentHouse] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState("Mumbai, Maharashtra");
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({
     show: false,
@@ -24,12 +25,21 @@ function App() {
     const loadMockData = async () => {
       try {
         // Try different paths for GitHub Pages compatibility
+        const baseUrl = process.env.PUBLIC_URL || "";
         const possiblePaths = [
-          `${process.env.PUBLIC_URL}/mockData.json`,
-          `${window.location.pathname}mockData.json`,
+          `${baseUrl}/mockData.json`,
+          `${window.location.origin}${window.location.pathname}mockData.json`,
+          `${window.location.origin}/TentOnRent/mockData.json`,
           "/mockData.json",
-          "./mockData.json"
+          "./mockData.json",
         ];
+        
+        console.log("Environment:", {
+          PUBLIC_URL: process.env.PUBLIC_URL,
+          origin: window.location.origin,
+          pathname: window.location.pathname,
+          href: window.location.href,
+        });
         
         let data = null;
         let lastError = null;
@@ -105,6 +115,11 @@ function App() {
     setCurrentScreen("home");
   };
 
+  const handleLocationSelect = (location) => {
+    setCurrentLocation(location);
+    showToast("success", `Location changed to ${location}`);
+  };
+
   if (!mockData) {
     return <LoadingOverlay show={true} message="Loading app..." />;
   }
@@ -130,14 +145,16 @@ function App() {
         <LoginScreen onLogin={handleLogin} onSkipLogin={handleSkipLogin} />
       )}
 
-      {currentScreen === "home" && (
-        <HomeScreen
-          user={currentUser}
-          mockData={mockData}
-          onShowToast={showToast}
-          onViewDetails={handleViewDetails}
-        />
-      )}
+        {currentScreen === "home" && (
+          <HomeScreen
+            user={currentUser}
+            mockData={mockData}
+            currentLocation={currentLocation}
+            onShowToast={showToast}
+            onViewDetails={handleViewDetails}
+            onLocationSelect={handleLocationSelect}
+          />
+        )}
 
       {currentScreen === "details" && (
         <TentHouseDetailsScreen

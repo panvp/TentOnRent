@@ -2,41 +2,53 @@ import React, { useState, useEffect } from "react";
 import SearchBar from "./SearchBar";
 import CategoryGrid from "./CategoryGrid";
 import TentHousesList from "./TentHousesList";
+import LocationSelector from "./LocationSelector";
 
-const HomeScreen = ({ user, mockData, onShowToast, onViewDetails }) => {
+const HomeScreen = ({ 
+  user, 
+  mockData, 
+  currentLocation, 
+  onShowToast, 
+  onViewDetails, 
+  onLocationSelect 
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredTentHouses, setFilteredTentHouses] = useState([]);
+  const [isLocationSelectorOpen, setIsLocationSelectorOpen] = useState(false);
 
   useEffect(() => {
     if (mockData?.tentHouses) {
       filterTentHouses(searchTerm);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mockData, searchTerm]);
+  }, [mockData, searchTerm, currentLocation]);
 
   const filterTentHouses = (term) => {
     if (!mockData?.tentHouses) return;
 
-    if (!term.trim()) {
-      setFilteredTentHouses(mockData.tentHouses);
-      return;
+    // First filter by location
+    let locationFiltered = mockData.tentHouses.filter((tentHouse) =>
+      tentHouse.location === currentLocation
+    );
+
+    // Then filter by search term if provided
+    if (term.trim()) {
+      const searchLower = term.toLowerCase();
+      locationFiltered = locationFiltered.filter((tentHouse) => {
+        return (
+          tentHouse.name.toLowerCase().includes(searchLower) ||
+          tentHouse.description.toLowerCase().includes(searchLower) ||
+          tentHouse.location.toLowerCase().includes(searchLower) ||
+          tentHouse.items.some(
+            (item) =>
+              item.name.toLowerCase().includes(searchLower) ||
+              item.description.toLowerCase().includes(searchLower)
+          )
+        );
+      });
     }
 
-    const searchLower = term.toLowerCase();
-    const filtered = mockData.tentHouses.filter((tentHouse) => {
-      return (
-        tentHouse.name.toLowerCase().includes(searchLower) ||
-        tentHouse.description.toLowerCase().includes(searchLower) ||
-        tentHouse.location.toLowerCase().includes(searchLower) ||
-        tentHouse.items.some(
-          (item) =>
-            item.name.toLowerCase().includes(searchLower) ||
-            item.description.toLowerCase().includes(searchLower)
-        )
-      );
-    });
-
-    setFilteredTentHouses(filtered);
+    setFilteredTentHouses(locationFiltered);
   };
 
   const handleSearch = (term) => {
@@ -89,6 +101,22 @@ const HomeScreen = ({ user, mockData, onShowToast, onViewDetails }) => {
               </button>
             </div>
           </div>
+          
+          {/* Location Bar */}
+          <div className="pb-4">
+            <button
+              onClick={() => setIsLocationSelectorOpen(true)}
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+              </svg>
+              <span className="font-medium">{currentLocation}</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -121,6 +149,16 @@ const HomeScreen = ({ user, mockData, onShowToast, onViewDetails }) => {
           </p>
         </div>
       </footer>
+
+      {/* Location Selector Modal */}
+      <LocationSelector
+        isOpen={isLocationSelectorOpen}
+        onClose={() => setIsLocationSelectorOpen(false)}
+        onSelectLocation={onLocationSelect}
+        currentLocation={currentLocation}
+        supportedCities={mockData.appConfig.supportedCities}
+        popularCities={mockData.appConfig.popularCities}
+      />
     </div>
   );
 };
