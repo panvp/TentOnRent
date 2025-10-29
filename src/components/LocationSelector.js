@@ -10,10 +10,11 @@ const LocationSelector = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredCities, setFilteredCities] = useState([]);
+  const [isDetecting, setIsDetecting] = useState(false);
 
   React.useEffect(() => {
     if (searchTerm.trim()) {
-      const filtered = supportedCities.filter(city =>
+      const filtered = supportedCities.filter((city) =>
         city.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredCities(filtered);
@@ -22,6 +23,60 @@ const LocationSelector = ({
     }
   }, [searchTerm, supportedCities]);
 
+  async function reverseGeocodeCityState(lat, lon) {
+    // Try BigDataCloud first (no API key, CORS-friendly)
+    try {
+      const res = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const city =
+          data.city ||
+          data.locality ||
+          data.principalSubdivisionLocality ||
+          data.localityInfo?.administrative?.[2]?.name;
+        const state =
+          data.principalSubdivision ||
+          data.localityInfo?.administrative?.[1]?.name;
+        if (city && state) return `${city}, ${state}`;
+      }
+    } catch (_) {}
+
+    // Fallback: OpenStreetMap Nominatim
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=10&lat=${lat}&lon=${lon}`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const addr = data.address || {};
+        const city =
+          addr.city || addr.town || addr.village || addr.hamlet || addr.suburb;
+        const state = addr.state || addr.region;
+        if (city && state) return `${city}, ${state}`;
+      }
+    } catch (_) {}
+
+    return null;
+  }
+
+  function normalizeToSupported(cityState) {
+    if (!cityState || !Array.isArray(supportedCities)) return cityState;
+    // Exact match first
+    if (supportedCities.includes(cityState)) return cityState;
+    const [cityPart, statePart] = cityState.split(",").map((s) => s.trim());
+    // Find best fuzzy match by city or state occurrence
+    const byCity = supportedCities.find((c) =>
+      c.toLowerCase().includes(cityPart.toLowerCase())
+    );
+    if (byCity) return byCity;
+    const byState = supportedCities.find((c) =>
+      c.toLowerCase().includes(statePart.toLowerCase())
+    );
+    return byState || cityState;
+  }
+
   const handleCitySelect = (city) => {
     onSelectLocation(city);
     onClose();
@@ -29,19 +84,32 @@ const LocationSelector = ({
 
   const handleCurrentLocation = () => {
     if (navigator.geolocation) {
+      setIsDetecting(true);
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          // For demo purposes, we'll use a default location
-          // In a real app, you'd reverse geocode the coordinates
-          onSelectLocation("Mumbai, Maharashtra");
-          onClose();
+        async (position) => {
+          try {
+            const { latitude, longitude } = position.coords;
+            const cityState = await reverseGeocodeCityState(
+              latitude,
+              longitude
+            );
+            const normalized = normalizeToSupported(cityState || "");
+            onSelectLocation(normalized || "Mumbai, Maharashtra");
+          } catch (e) {
+            console.error("Reverse geocoding failed:", e);
+            onSelectLocation("Mumbai, Maharashtra");
+          } finally {
+            setIsDetecting(false);
+            onClose();
+          }
         },
         (error) => {
           console.error("Error getting location:", error);
-          // Fallback to default
+          setIsDetecting(false);
           onSelectLocation("Mumbai, Maharashtra");
           onClose();
-        }
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
       );
     } else {
       onSelectLocation("Mumbai, Maharashtra");
@@ -56,13 +124,25 @@ const LocationSelector = ({
       <div className="bg-white rounded-lg w-full max-w-md max-h-[80vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800">Select Location</h2>
+          <h2 className="text-lg font-semibold text-gray-800">
+            Select Location
+          </h2>
           <button
             onClick={onClose}
             className="p-2 rounded-full hover:bg-gray-100 transition-colors"
           >
-            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-5 h-5 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -77,8 +157,18 @@ const LocationSelector = ({
               className="w-full px-4 py-3 pl-10 bg-gray-50 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
               placeholder="Search for your city..."
             />
-            <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           </div>
         </div>
@@ -89,17 +179,41 @@ const LocationSelector = ({
           <div className="p-4 border-b border-gray-100">
             <button
               onClick={handleCurrentLocation}
-              className="w-full flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors"
+              disabled={isDetecting}
+              className={`w-full flex items-center p-3 rounded-lg hover:bg-gray-50 transition-colors ${
+                isDetecting ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                <svg
+                  className="w-5 h-5 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
                 </svg>
               </div>
               <div className="text-left">
-                <div className="font-medium text-gray-800">Use current location</div>
-                <div className="text-sm text-gray-500">Detect your location automatically</div>
+                <div className="font-medium text-gray-800">
+                  {isDetecting
+                    ? "Detecting current location…"
+                    : "Use current location"}
+                </div>
+                <div className="text-sm text-gray-500">
+                  Detect your location automatically
+                </div>
               </div>
             </button>
           </div>
@@ -107,7 +221,9 @@ const LocationSelector = ({
           {/* Search Results */}
           {searchTerm && (
             <div className="p-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Search Results</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-3">
+                Search Results
+              </h3>
               {filteredCities.length > 0 ? (
                 <div className="space-y-2">
                   {filteredCities.map((city, index) => (
@@ -117,14 +233,30 @@ const LocationSelector = ({
                       className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors text-left"
                     >
                       <div className="flex items-center">
-                        <svg className="w-4 h-4 text-gray-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                        <svg
+                          className="w-4 h-4 text-gray-400 mr-3"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                            clipRule="evenodd"
+                          />
                         </svg>
                         <span className="text-gray-800">{city}</span>
                       </div>
                       {currentLocation === city && (
-                        <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        <svg
+                          className="w-4 h-4 text-green-500"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
                         </svg>
                       )}
                     </button>
@@ -132,8 +264,18 @@ const LocationSelector = ({
                 </div>
               ) : (
                 <div className="text-center py-8 text-gray-500">
-                  <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  <svg
+                    className="w-12 h-12 mx-auto mb-3 text-gray-300"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
                   </svg>
                   <p>No cities found</p>
                   <p className="text-sm">Try a different search term</p>
@@ -145,7 +287,9 @@ const LocationSelector = ({
           {/* Popular Cities */}
           {!searchTerm && (
             <div className="p-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">Popular Cities</h3>
+              <h3 className="text-sm font-medium text-gray-700 mb-3">
+                Popular Cities
+              </h3>
               <div className="space-y-2">
                 {popularCities.map((city, index) => (
                   <button
@@ -154,14 +298,30 @@ const LocationSelector = ({
                     className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors text-left"
                   >
                     <div className="flex items-center">
-                      <svg className="w-4 h-4 text-gray-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                      <svg
+                        className="w-4 h-4 text-gray-400 mr-3"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                       <span className="text-gray-800">{city}</span>
                     </div>
                     {currentLocation === city && (
-                      <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      <svg
+                        className="w-4 h-4 text-green-500"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     )}
                   </button>
