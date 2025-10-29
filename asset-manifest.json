@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/TentOnRent/static/css/main.f9b43d6c.css",
-    "main.js": "/TentOnRent/static/js/main.7fe91c3c.js",
+    "main.css": "/TentOnRent/static/css/main.06b3f29e.css",
+    "main.js": "/TentOnRent/static/js/main.7d3f39a8.js",
     "index.html": "/TentOnRent/index.html",
-    "main.f9b43d6c.css.map": "/TentOnRent/static/css/main.f9b43d6c.css.map",
-    "main.7fe91c3c.js.map": "/TentOnRent/static/js/main.7fe91c3c.js.map"
+    "main.06b3f29e.css.map": "/TentOnRent/static/css/main.06b3f29e.css.map",
+    "main.7d3f39a8.js.map": "/TentOnRent/static/js/main.7d3f39a8.js.map"
   },
   "entrypoints": [
-    "static/css/main.f9b43d6c.css",
-    "static/js/main.7fe91c3c.js"
+    "static/css/main.06b3f29e.css",
+    "static/js/main.7d3f39a8.js"
   ]
 }
