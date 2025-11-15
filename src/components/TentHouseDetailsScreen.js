@@ -1,6 +1,31 @@
 import React from "react";
 
-const TentHouseDetailsScreen = ({ tentHouse, currency, onBack }) => {
+const TentHouseDetailsScreen = ({ 
+  tentHouse, 
+  currency, 
+  cart = [],
+  cartItemCount,
+  onBack, 
+  onAddToCart,
+  onRemoveFromCart,
+  onUpdateQuantity,
+  onViewCart
+}) => {
+  // Helper function to get item quantity in cart
+  const getItemQuantityInCart = (item) => {
+    const cartItem = cart.find(
+      (cartItem) => cartItem.name === item.name && cartItem.tentHouseId === tentHouse.id
+    );
+    return cartItem ? cartItem.quantity : 0;
+  };
+
+  // Helper function to get cart item index
+  const getCartItemIndex = (item) => {
+    return cart.findIndex(
+      (cartItem) => cartItem.name === item.name && cartItem.tentHouseId === tentHouse.id
+    );
+  };
+
   if (!tentHouse) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -25,10 +50,35 @@ const TentHouseDetailsScreen = ({ tentHouse, currency, onBack }) => {
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center py-4">
-            <button
-              onClick={onBack}
-              className="mr-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center">
+              <button
+                onClick={onBack}
+                className="mr-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <svg
+                  className="w-6 h-6 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+              <h1 className="text-2xl font-bold text-gray-800">
+                {tentHouse.name}
+              </h1>
+            </div>
+            
+            {/* Cart Button */}
+            <button 
+              onClick={onViewCart}
+              className="p-2 rounded-full hover:bg-gray-100 relative"
             >
               <svg
                 className="w-6 h-6 text-gray-600"
@@ -40,13 +90,15 @@ const TentHouseDetailsScreen = ({ tentHouse, currency, onBack }) => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth="2"
-                  d="M15 19l-7-7 7-7"
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                 />
               </svg>
+              {cartItemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartItemCount}
+                </span>
+              )}
             </button>
-            <h1 className="text-2xl font-bold text-gray-800">
-              {tentHouse.name}
-            </h1>
           </div>
         </div>
       </header>
@@ -151,22 +203,59 @@ const TentHouseDetailsScreen = ({ tentHouse, currency, onBack }) => {
                       </svg>
                       Available
                     </div>
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors duration-200 flex items-center">
-                      <svg
-                        className="w-4 h-4 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    
+                    {getItemQuantityInCart(item) > 0 ? (
+                      // Show quantity controls if item is in cart
+                      <div className="flex items-center space-x-3 bg-blue-50 px-3 py-2 rounded-lg">
+                        <button
+                          onClick={() => {
+                            const index = getCartItemIndex(item);
+                            const quantity = getItemQuantityInCart(item);
+                            if (quantity === 1) {
+                              onRemoveFromCart(index);
+                            } else {
+                              onUpdateQuantity(index, quantity - 1);
+                            }
+                          }}
+                          className="w-7 h-7 rounded-full bg-white hover:bg-gray-100 flex items-center justify-center border border-gray-200 transition-colors"
+                        >
+                          <span className="text-blue-600 font-bold">−</span>
+                        </button>
+                        <span className="font-semibold text-blue-600 min-w-[2rem] text-center">
+                          {getItemQuantityInCart(item)}
+                        </span>
+                        <button
+                          onClick={() => {
+                            const index = getCartItemIndex(item);
+                            onUpdateQuantity(index, getItemQuantityInCart(item) + 1);
+                          }}
+                          className="w-7 h-7 rounded-full bg-white hover:bg-gray-100 flex items-center justify-center border border-gray-200 transition-colors"
+                        >
+                          <span className="text-blue-600 font-bold">+</span>
+                        </button>
+                      </div>
+                    ) : (
+                      // Show Add to Cart button if item is not in cart
+                      <button 
+                        onClick={() => onAddToCart(item, tentHouse)}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors duration-200 flex items-center"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h7"
-                        />
-                      </svg>
-                      Add to Cart
-                    </button>
+                        <svg
+                          className="w-4 h-4 mr-2"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h7"
+                          />
+                        </svg>
+                        Add to Cart
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

@@ -214,36 +214,22 @@
     "searchPlaceholder": "Search for chairs, tents, speakers...",
     "currency": "₹",
     "supportedCities": [
+      "Mathura, Uttar Pradesh",
       "Pune, Maharashtra",
       "Mumbai, Maharashtra",
       "Delhi, NCR",
       "Bangalore, Karnataka",
-      "Chennai, Tamil Nadu",
-      "Hyderabad, Telangana",
-      "Kolkata, West Bengal",
-      "Ahmedabad, Gujarat",
-      "Jaipur, Rajasthan",
       "Lucknow, Uttar Pradesh",
-      "Chandigarh, Punjab",
-      "Indore, Madhya Pradesh",
-      "Kochi, Kerala",
-      "Coimbatore, Tamil Nadu",
-      "Vadodara, Gujarat",
-      "Nashik, Maharashtra",
-      "Nagpur, Maharashtra",
-      "Thiruvananthapuram, Kerala",
-      "Bhubaneswar, Odisha",
-      "Surat, Gujarat"
+      "Indore, Madhya Pradesh"
     ],
     "popularCities": [
-      "Mumbai, Maharashtra",
-      "Delhi, NCR", 
-      "Bangalore, Karnataka",
+      "Mathura, Uttar Pradesh",
       "Pune, Maharashtra",
-      "Hyderabad, Telangana",
-      "Chennai, Tamil Nadu",
-      "Kolkata, West Bengal",
-      "Ahmedabad, Gujarat"
+      "Mumbai, Maharashtra",
+      "Delhi, NCR",
+      "Bangalore, Karnataka",
+      "Lucknow, Uttar Pradesh",
+      "Indore, Madhya Pradesh"
     ]
   }
 }

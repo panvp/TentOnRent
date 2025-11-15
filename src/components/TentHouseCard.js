@@ -4,7 +4,10 @@ const TentHouseCard = ({ tentHouse, currency, onViewDetails }) => {
   const minPrice = Math.min(...tentHouse.items.map((item) => item.price));
 
   return (
-    <div className="tent-house-card bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+    <div 
+      onClick={() => onViewDetails(tentHouse.id)}
+      className="tent-house-card bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer"
+    >
       <div className="p-6">
         <div className="flex justify-between items-start mb-4">
           <div>
@@ -70,7 +73,10 @@ const TentHouseCard = ({ tentHouse, currency, onViewDetails }) => {
             </span>
           </div>
           <button
-            onClick={() => onViewDetails(tentHouse.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onViewDetails(tentHouse.id);
+            }}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors duration-200"
           >
             View Details

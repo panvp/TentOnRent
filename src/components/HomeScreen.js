@@ -3,18 +3,25 @@ import SearchBar from "./SearchBar";
 import CategoryGrid from "./CategoryGrid";
 import TentHousesList from "./TentHousesList";
 import LocationSelector from "./LocationSelector";
+import ProfilePopup from "./ProfilePopup";
 
 const HomeScreen = ({ 
   user, 
   mockData, 
-  currentLocation, 
+  currentLocation,
+  cartItemCount,
   onShowToast, 
   onViewDetails, 
-  onLocationSelect 
+  onLocationSelect,
+  onViewCart,
+  onViewProfile,
+  onViewOrders,
+  onLogout
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredTentHouses, setFilteredTentHouses] = useState([]);
   const [isLocationSelectorOpen, setIsLocationSelectorOpen] = useState(false);
+  const [isProfilePopupOpen, setIsProfilePopupOpen] = useState(false);
 
   useEffect(() => {
     if (mockData?.tentHouses) {
@@ -69,7 +76,11 @@ const HomeScreen = ({
               {mockData.appConfig.appName}
             </h1>
             <div className="flex items-center space-x-4">
-              <button className="p-2 rounded-full hover:bg-gray-100">
+              {/* Cart Button */}
+              <button 
+                onClick={onViewCart}
+                className="p-2 rounded-full hover:bg-gray-100 relative"
+              >
                 <svg
                   className="w-6 h-6 text-gray-600"
                   fill="none"
@@ -80,25 +91,55 @@ const HomeScreen = ({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth="2"
-                    d="M15 17h5l-5 5-5-5h5v-12"
-                  ></path>
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
                 </svg>
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartItemCount}
+                  </span>
+                )}
               </button>
-              <button className="p-2 rounded-full hover:bg-gray-100">
-                <svg
-                  className="w-6 h-6 text-gray-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              
+              {/* Profile Button */}
+              <div className="relative">
+                <button 
+                  onClick={() => setIsProfilePopupOpen(!isProfilePopupOpen)}
+                  className="p-2 rounded-full hover:bg-gray-100"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  ></path>
-                </svg>
-              </button>
+                  <svg
+                    className="w-6 h-6 text-gray-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </button>
+                
+                <ProfilePopup
+                  user={user}
+                  isOpen={isProfilePopupOpen}
+                  onClose={() => setIsProfilePopupOpen(false)}
+                  onNavigateToProfile={() => {
+                    setIsProfilePopupOpen(false);
+                    onViewProfile();
+                  }}
+                  onNavigateToOrders={() => {
+                    setIsProfilePopupOpen(false);
+                    onViewOrders();
+                  }}
+                  onLogout={() => {
+                    setIsProfilePopupOpen(false);
+                    onLogout();
+                  }}
+                />
+              </div>
             </div>
           </div>
           
